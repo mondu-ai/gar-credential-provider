@@ -1,0 +1,111 @@
+version: "2"
+
+run:
+  timeout: 5m
+  go: '1.25'
+  modules-download-mode: readonly
+  allow-parallel-runners: true
+
+linters:
+  enable:
+    # Default enabled linters
+    - errcheck
+    - govet
+    - ineffassign
+    - staticcheck
+    - unused
+
+    # Security
+    - gosec
+    - bodyclose
+
+    # Style and formatting
+    - whitespace
+    - misspell
+
+    # Code quality
+    - gocritic
+    - cyclop
+    - funlen
+
+    # Error handling
+    - errorlint
+    - errname
+
+    # Best practices
+    - goconst
+    - unconvert
+
+    # Additional useful linters
+    - gocyclo
+    - dupl
+    - nakedret
+
+  settings:
+    errcheck:
+      check-type-assertions: true
+      check-blank: false
+      exclude-functions:
+        - (*os.File).Close
+
+    govet:
+      enable-all: true
+      disable:
+        - fieldalignment
+        - shadow
+
+    staticcheck:
+      checks:
+        - "all"
+        - "-ST1000"
+
+    gosec:
+      severity: medium
+      confidence: medium
+
+    gocritic:
+      enabled-tags:
+        - diagnostic
+        - performance
+      disabled-checks:
+        - ifElseChain
+        - hugeParam
+
+    funlen:
+      lines: 100
+      statements: 50
+
+    cyclop:
+      max-complexity: 15
+
+    gocyclo:
+      min-complexity: 15
+
+    dupl:
+      threshold: 100
+
+    nakedret:
+      max-func-lines: 30
+
+    misspell:
+      locale: US
+
+    goconst:
+      min-len: 3
+      min-occurrences: 3
+
+  exclusions:
+    rules:
+      - path: _test\.go
+        linters:
+          - gosec
+          - funlen
+          - goconst
+          - dupl
+          - gocyclo
+          - gocritic
+          - errcheck
+
+issues:
+  max-issues-per-linter: 0
+  max-same-issues: 0
