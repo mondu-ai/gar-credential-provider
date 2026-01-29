@@ -1,0 +1,63 @@
+run:
+  timeout: 5m
+
+linters:
+  enable:
+    - bodyclose
+    - cyclop
+    - dupl
+    - errcheck
+    - errorlint
+    - funlen
+    - goconst
+    - gocritic
+    - gocyclo
+    - gosec
+    - govet
+    - misspell
+    - nakedret
+    - prealloc
+    - revive
+    - staticcheck
+    - unconvert
+
+linters-settings:
+  cyclop:
+    max-complexity: 15
+  funlen:
+    lines: 100
+    statements: 50
+  gocyclo:
+    min-complexity: 15
+  dupl:
+    threshold: 100
+  goconst:
+    min-len: 3
+    min-occurrences: 3
+  nakedret:
+    max-func-lines: 30
+
+issues:
+  exclude-rules:
+    # Test files - relax some rules
+    - path: _test\.go
+      linters:
+        - gosec
+        - funlen
+        - goconst
+        - dupl
+        - gocyclo
+    # Allow long lines in test files
+    - path: _test\.go
+      linters:
+        - lll
+    # Kubernetes API types intentionally follow K8s naming conventions
+    - path: internal/credentialprovider/types\.go
+      linters:
+        - revive
+      text: "stutters"
+    # if-else chain is clearer than switch for credential source selection
+    - path: internal/gcpauth/token\.go
+      linters:
+        - gocritic
+      text: "ifElseChain"

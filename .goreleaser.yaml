@@ -1,0 +1,48 @@
+version: 2
+
+project_name: gar-credential-provider
+
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  - id: gar-credential-provider
+    main: ./cmd/gar-credential-provider
+    binary: gar-credential-provider
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      - -s -w
+      - -X github.com/mondu-ai/gar-credential-provider/internal/version.Version={{.Version}}
+      - -X github.com/mondu-ai/gar-credential-provider/internal/version.GitCommit={{.Commit}}
+      - -X github.com/mondu-ai/gar-credential-provider/internal/version.BuildTime={{.Date}}
+
+archives:
+  - id: default
+    format: binary
+    name_template: "{{ .ProjectName }}-{{ .Os }}-{{ .Arch }}"
+
+checksum:
+  name_template: "checksums.txt"
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+      - "^ci:"
+      - "^chore:"
+
+release:
+  github:
+    owner: mondu-ai
+    name: gar-credential-provider
+  prerelease: auto
+  make_latest: true
