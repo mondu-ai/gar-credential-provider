@@ -31,7 +31,7 @@ RUN CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} \
     ./cmd/gar-credential-provider
 
 # Runtime stage - using alpine for chroot (needed to restart kubelet in DaemonSet mode)
-FROM alpine:3.21
+FROM alpine:3.23
 
 # Add metadata labels
 LABEL org.opencontainers.image.title="GAR Credential Provider"
