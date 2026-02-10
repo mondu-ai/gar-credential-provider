@@ -48,6 +48,6 @@ Examples:
   # Run as kubelet credential provider (default)
   gar-credential-provider --config=/etc/eks/image-credential-provider/gcp-credential-config.json
 
-  # DaemonSet install (reads from environment variables)
-  GCP_CONFIG='...' NODE_NAME=node-1 VERSION=v1.0.0 gar-credential-provider install`)
+  # DaemonSet install (reads from environment variables, stays running)
+  GCP_CONFIG='...' gar-credential-provider install`)
 }
