@@ -2,34 +2,22 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"os"
-	"time"
+	"os/signal"
+	"syscall"
 
 	"github.com/mondu-ai/gar-credential-provider/internal/nodesetup"
 )
 
-const (
-	hostRoot       = "/host"
-	setupTimeout   = 2 * time.Minute
-	defaultVersion = "unknown"
-)
+const hostRoot = "/host"
 
 func runSetup(_ []string) {
 	gcpConfig := os.Getenv("GCP_CONFIG")
-	nodeName := os.Getenv("NODE_NAME")
-	version := os.Getenv("VERSION")
 	registries := os.Getenv("REGISTRIES")
 
 	if gcpConfig == "" {
 		log.Fatal("GCP_CONFIG env var is required")
-	}
-	if nodeName == "" {
-		log.Fatal("NODE_NAME env var is required")
-	}
-	if version == "" {
-		version = defaultVersion
 	}
 	if registries == "" {
 		registries = "*.pkg.dev"
@@ -45,6 +33,13 @@ func runSetup(_ []string) {
 		Registries: registries,
 	})
 
+	ctx, cancel := signal.NotifyContext(context.Background(), syscall.SIGTERM, os.Interrupt)
+	defer cancel()
+
+	runSetupWithInstaller(ctx, installer)
+}
+
+func runSetupWithInstaller(ctx context.Context, installer nodesetup.Installer) {
 	result, err := installer.Install()
 	if err != nil {
 		log.Fatalf("Installation failed: %v", err)
@@ -61,21 +56,7 @@ func runSetup(_ []string) {
 		log.Println("No changes needed, skipping kubelet restart")
 	}
 
-	if err := labelNode(nodeName, version); err != nil {
-		log.Fatalf("Failed to label node: %v", err)
-	}
-
-	fmt.Printf("Setup complete on node %s (version: %s)\n", nodeName, version)
-}
-
-func labelNode(nodeName, version string) error {
-	labeler, err := nodesetup.NewLabeler()
-	if err != nil {
-		return fmt.Errorf("create node labeler: %w", err)
-	}
-
-	ctx, cancel := context.WithTimeout(context.Background(), setupTimeout)
-	defer cancel()
-
-	return labeler.LabelNode(ctx, nodeName, version)
+	log.Println("Setup complete, waiting for termination signal...")
+	<-ctx.Done()
+	log.Println("Received termination signal, exiting")
 }

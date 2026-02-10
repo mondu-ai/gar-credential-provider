@@ -33,13 +33,14 @@ func NewTokenFetcher(configPath string) (TokenFetcher, error) {
 func NewTokenFetcherFromConfig(config *Config) (TokenFetcher, error) {
 	credSource := &externalaccount.CredentialSource{}
 
-	if config.IsAWS() {
+	switch {
+	case config.IsAWS():
 		credSource.EnvironmentID = config.CredentialSource.EnvironmentID
 		credSource.RegionURL = config.CredentialSource.RegionURL
 		credSource.URL = config.CredentialSource.URL
 		credSource.RegionalCredVerificationURL = config.CredentialSource.RegionalCredVerificationURL
 		credSource.IMDSv2SessionTokenURL = config.CredentialSource.IMDSv2SessionTokenURL
-	} else if config.CredentialSource.File != "" {
+	case config.CredentialSource.File != "":
 		credSource.File = config.CredentialSource.File
 		if config.CredentialSource.Format != nil {
 			credSource.Format = externalaccount.Format{
@@ -47,7 +48,7 @@ func NewTokenFetcherFromConfig(config *Config) (TokenFetcher, error) {
 				SubjectTokenFieldName: config.CredentialSource.Format.SubjectTokenFieldName,
 			}
 		}
-	} else if config.CredentialSource.URL != "" {
+	case config.CredentialSource.URL != "":
 		credSource.URL = config.CredentialSource.URL
 		credSource.Headers = config.CredentialSource.Headers
 		if config.CredentialSource.Format != nil {
