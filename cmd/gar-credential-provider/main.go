@@ -26,7 +26,7 @@ func main() {
 			runProvider()
 			return
 		}
-		fmt.Fprintf(os.Stderr, "unknown command: %s\n\n", os.Args[1])
+		fmt.Fprintf(os.Stderr, "unknown command: %s\n\n", os.Args[1]) //nolint:gosec // stderr output, not web response
 		printUsage()
 		os.Exit(1)
 	}

@@ -39,5 +39,5 @@ type Response struct {
 // AuthConfig contains Docker registry authentication credentials.
 type AuthConfig struct {
 	Username string `json:"username,omitempty"`
-	Password string `json:"password,omitempty"`
+	Password string `json:"password,omitempty"` //nolint:gosec // kubelet credential provider API field
 }

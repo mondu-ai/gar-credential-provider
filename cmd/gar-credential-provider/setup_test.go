@@ -30,9 +30,9 @@ func (m *mockInstaller) RestartKubelet() error {
 
 func TestRunSetupWithInstaller(t *testing.T) {
 	tests := []struct {
-		name          string
-		result        nodesetup.InstallResult
-		wantRestart   bool
+		name        string
+		result      nodesetup.InstallResult
+		wantRestart bool
 	}{
 		{
 			name: "changes made triggers kubelet restart",
